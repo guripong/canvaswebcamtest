@@ -14,9 +14,11 @@
     video: true,
     audio: false
   }, function(stream) {
+
     video.srcObject = stream;
 //    video.src = vendorUrl.createObjectURL(stream);
-    video.play();
+  console.log(video);
+  video.play();
 
   }, function(error) {
     // an error occurred
@@ -24,16 +26,11 @@
   } );
 
   video.addEventListener('play', function() {
-    draw( this, context, 1280, 720 ); //아래 흑백 그리기
+    draw( this, context, 640, 480 ); //아래 흑백 그리기
     console.log(video.videoHeight+'//'+video.videoWidth);
+
   }, false );
 
-  function swap2(a,b)
-  {
-    var temp = a;
-    a = b;
-    b = temp;
-  }
 
   var ia=1;
   var fixedimage = new Uint8ClampedArray(1280*4*720);
@@ -46,11 +43,18 @@
 
     image = context.getImageData( 0, 0, width, height );
     data = image.data;
-//    console.log(data.length/4); 
-
+  //    console.log(data.length/4); 
+  console.log(video.videoHeight+'//'+video.videoWidth);
  
  
-  
+    for(var i = 0 ; i< 640*480*4 ; i=i+4)
+    {
+      r = data[i];
+      g = data[i + 1];
+      b = data[i + 2];
+      a = data[i+3] ;
+      data[i]= data[i+1]= data[i+2] =(r+g+b)/3;
+    }
     /*
     console.log("###original###");
     console.log(data);
@@ -83,17 +87,9 @@
       console.log("@@@@@@@@@@@changed@@@@@@@@@");
     */
 
-    //console.log("길이:"+data.length/4); /
-    //1280 * 4 
-    /*
-    for( i = 0 ; i < data.length ; i += 4 ) {
-      r = data[i];
-      g = data[i + 1];
-      b = data[i + 2];
-    }*/
     
-    image.data = fixedimage;
-    //image.data = data;
+    //image.data = fixedimage;
+    image.data = data;
 
     context.putImageData( image, 0, 0 );
 
